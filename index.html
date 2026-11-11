@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b0e14">
+<meta name="robots" content="noindex,nofollow">
+<title>MP マグネットポイント</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="stage">
+  <canvas id="game"></canvas>
+  <div id="hurt"></div>
+  <div id="labels"></div>
+
+  <div id="reticle" hidden><i></i><span id="ret-info"></span></div>
+  <div id="hint"></div>
+  <div id="toast"></div>
+  <div id="boss" hidden><div id="boss-name"></div><div class="bbar"><i id="boss-fill"></i></div></div>
+
+  <div id="hud" hidden>
+    <div id="status">
+      <div id="pole">N</div>
+      <div class="bars">
+        <div class="bar mp"><i id="mp-fill"></i><span>MP <b id="mp-n"></b></span></div>
+        <div class="bar hp"><i id="hp-fill"></i><span>体力 <b id="hp-n"></b></span></div>
+      </div>
+    </div>
+    <div id="bottom">
+      <div class="wbox"><div id="weapons"></div><div id="equip">装備：素手</div></div>
+      <div id="scrap">
+        <svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="28" class="bg"/><circle cx="32" cy="32" r="28" id="ring-fg"/></svg>
+        <div class="sv"><b id="scrap-n">0/30</b><small>鉄くず重量</small></div>
+      </div>
+    </div>
+  </div>
+  <div id="keys" hidden></div>
+  <div id="lockhint" hidden>画面をクリックすると、マウスで視点を動かせます</div>
+
+  <div id="title" class="overlay">
+    <div class="card wide">
+      <h1 class="logo"><span class="n">M</span><span class="s">P</span></h1>
+      <p class="sub">マグネットポイント</p>
+      <p>自分自身が磁石になって、S極とN極を切り替えながら進むアクションゲーム。<br>鉄くずを引き寄せて身にまとい、武器を作り、極を反転させて撃ち出そう。</p>
+      <button type="button" id="start-btn" class="btn">はじめる</button>
+      <p class="note">PSコントローラーは、USBかBluetoothでパソコンにつないでからボタンを押すと使えます。<br>キーボード＋マウスで遊ぶときは、画面をクリックするとマウスで視点を動かせます。</p>
+      <details><summary>操作方法</summary><div id="title-ctl"></div></details>
+      <button type="button" id="reset-btn" class="btn ghost small">データを消して最初から</button>
+    </div>
+  </div>
+
+  <div id="pause" class="overlay" hidden>
+    <div class="card wide menu">
+      <h1>メニュー</h1>
+      <p class="mnote">ゲームは止まっています。<kbd>M</kbd> か <kbd>OPTIONS</kbd> でとじます。</p>
+      <p id="pause-stats" class="stats"></p>
+      <button type="button" id="resume-btn" class="btn">つづける</button>
+      <button type="button" id="to-lobby" class="btn ghost">ロビーにもどる</button>
+      <h2>操作方法</h2>
+      <div id="pause-ctl"></div>
+      <div class="tips">
+        <p><b>磁力のきまり</b>：自分と<b>反対の極</b>のものは引き合い、<b>同じ極</b>のものは反発する。<span class="pn">赤＝N極</span>、<span class="ps">青＝S極</span>。</p>
+        <p>自分より<b>小さいもの</b>（鉄くず・小さい敵）は引き寄せる。<b>大きいもの</b>（磁石ブロック・大きい敵）には自分が引っぱられる。</p>
+        <p>反対の極の鉄くずに近づくと体にくっつく。極を切り替えると、くっついた鉄くずが照準の方へ飛んでいく。</p>
+        <p>引き寄せた敵が近づいた瞬間に攻撃すると<b>強攻撃</b>（2.5倍）。</p>
+      </div>
+      <h2>設定</h2>
+      <div class="settings">
+        <label>マウス感度 <input type="range" id="set-sens" min="1" max="10" step="1"><output id="set-sens-v"></output></label>
+        <label>視点の上下を反転 <input type="checkbox" id="set-inv"></label>
+        <label>カメラの距離
+          <select id="set-dist"><option value="3.4">近い</option><option value="4.3">ふつう</option><option value="5.4">遠い</option></select>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div id="dead" class="overlay" hidden>
+    <div class="card">
+      <h1>やられた…</h1>
+      <p>まとった鉄くずと武器はなくなりました。</p>
+      <button type="button" id="retry-btn" class="btn">チェックポイントからやり直す</button>
+    </div>
+  </div>
+
+  <div id="clear" class="overlay" hidden>
+    <div class="card">
+      <h1>ステージクリア！</h1>
+      <p id="clear-gain" class="gain"></p>
+      <p>ポイントを能力に振り分けよう。</p>
+      <div id="alloc"></div>
+      <p id="alloc-left" class="left"></p>
+      <button type="button" id="clear-ok" class="btn">決定してロビーへ</button>
+    </div>
+  </div>
+
+  <div id="fade"></div>
+</div>
+
+<script src="guard.js"></script>
+<script src="announce.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
