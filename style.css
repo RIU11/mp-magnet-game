@@ -150,3 +150,12 @@ summary{cursor:pointer;color:var(--text);font-weight:700;text-align:center}
 .settings input:focus-visible,.settings select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 #lockhint{position:absolute;left:50%;top:calc(50% + 46px);transform:translateX(-50%);padding:6px 14px;border-radius:10px;background:rgba(0,0,0,.65);font-size:13px;font-weight:700;z-index:5;pointer-events:none}
 #lockhint[hidden]{display:none}
+
+/* ボタン・キー配置 */
+.bnote{font-size:.8rem !important;text-align:left}
+.bmsg{min-height:1.5em;font-weight:700;color:var(--gold) !important;font-size:.88rem !important}
+.bind{min-width:4.5em;padding:3px 10px;border-radius:7px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;font:inherit;font-size:.82rem;font-weight:700;cursor:pointer}
+.bind:hover{background:rgba(255,255,255,.22)}
+.bind.wait{background:var(--gold);color:#222;animation:blink .8s infinite}
+@keyframes blink{50%{opacity:.55}}
+.ctl small.fx{margin-left:4px;color:var(--sub);font-size:.72rem}

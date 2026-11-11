@@ -28,10 +28,17 @@ export const HUD = {
     const list = ["move", "jump", "magnet", "flip", "mp", "attack", "next", "craft", "neutral", "dash", "menu"];
     el.keys.innerHTML = list.map((a) => "<div><kbd>" + LABELS[a][input.device] + "</kbd>" + ACTION_NAMES[a].replace(/（.*）/, "") + "</div>").join("");
   },
-  controlsTable() {
+  // editable=true なら、押して配置を変えられるボタンにする（移動・視点・コントローラーのメニューは固定）
+  controlsTable(editable) {
     const list = ["move", "look", "dash", "jump", "magnet", "mp", "flip", "neutral", "attack", "next", "craft", "menu"];
+    const fixed = (a, dev) => a === "move" || a === "look" || (a === "menu" && dev === "pad");
+    const cell = (a, dev) => {
+      const extra = a === "menu" && dev === "kb" ? '<small class="fx">（Escでも開く）</small>' : "";
+      if (!editable || fixed(a, dev)) return "<td><kbd>" + LABELS[a][dev] + "</kbd>" + extra + (editable ? '<small class="fx">固定</small>' : "") + "</td>";
+      return '<td><button type="button" class="bind" data-a="' + a + '" data-d="' + dev + '">' + LABELS[a][dev] + "</button>" + extra + "</td>";
+    };
     return '<table class="ctl"><tr><th>操作</th><th>PSコントローラー</th><th>キーボード＋マウス</th></tr>' +
-      list.map((a) => "<tr><td>" + ACTION_NAMES[a] + "</td><td><kbd>" + LABELS[a].pad + "</kbd></td><td><kbd>" + LABELS[a].kb + "</kbd>" + (a === "menu" ? "（Escでも開く）" : "") + "</td></tr>").join("") + "</table>";
+      list.map((a) => "<tr><td>" + ACTION_NAMES[a] + "</td>" + cell(a, "pad") + cell(a, "kb") + "</tr>").join("") + "</table>";
   },
   hint(html, dur = 10) { el.hint.innerHTML = html; el.hint.classList.add("on"); hintT = dur; },
   clearHint() { el.hint.classList.remove("on"); hintT = 0; },

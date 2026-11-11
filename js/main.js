@@ -1,7 +1,7 @@
 // ゲーム全体の流れ：タイトル → ロビー → ステージ → クリア（ポイント振り分け）→ ロビー
 import { THREE, G, POLE_NAME, initAssets, V } from "./core.js";
 import { FX } from "./fx.js";
-import { input } from "./input.js";
+import { input, LABELS } from "./input.js";
 import { HUD } from "./hud.js";
 import { Player, cam, updateCamera } from "./player.js";
 import { updateEnemies } from "./enemies.js";
@@ -163,7 +163,7 @@ function startGame() {
   input.consume();
   showOverlay(null);
   HUD.show(true);
-  HUD.toast(input.device === "pad" ? "OPTIONS でメニュー（操作方法・設定）" : "M でメニュー（操作方法・設定）を開けます", 5);
+  HUD.toast(input.device === "pad" ? "OPTIONS でメニュー（操作方法・設定）" : input.label("menu") + " でメニュー（操作方法・ボタン配置・設定）を開けます", 5);
   if (!G.level) loadLevel("lobby", G.save.doorOpened ? "select" : "start");
   state = "playing";
   if (input.device === "kb") input.lock();
@@ -265,8 +265,35 @@ $("set-sens").addEventListener("input", (e) => { settings.sens = +e.target.value
 $("set-inv").addEventListener("change", (e) => { settings.inv = e.target.checked; store.set("settings", settings); applySettings(); });
 $("set-dist").addEventListener("change", (e) => { settings.dist = +e.target.value; store.set("settings", settings); applySettings(); });
 applySettings();
-$("title-ctl").innerHTML = HUD.controlsTable();
-$("pause-ctl").innerHTML = HUD.controlsTable();
+// ボタン・キー配置（端末に保存）
+input.setBinds(store.get("binds", null));
+function renderControls() {
+  $("title-ctl").innerHTML = HUD.controlsTable(false);
+  $("pause-ctl").innerHTML = HUD.controlsTable(true);
+  $("menu-key").textContent = LABELS.menu.kb;
+  HUD.refreshKeys(); HUD._lobby = null; lobbyHintT = 0;
+}
+function bindsChanged() { store.set("binds", input.binds); renderControls(); }
+$("pause-ctl").addEventListener("click", (e) => {
+  const b = e.target.closest("button.bind"); if (!b || input.capture) return;
+  // マウスのボタンを受けとった直後のクリックで、また入力待ちにならないように
+  if (performance.now() - (input.lastMouseCapture || 0) < 400) return;
+  const a = b.dataset.a, dev = b.dataset.d;
+  b.classList.add("wait"); b.textContent = "入力待ち…";
+  $("bind-msg").textContent = "「" + b.closest("tr").firstChild.textContent.replace(/（.*）/, "") + "」に使う" + (dev === "pad" ? "コントローラーのボタン" : "キーかマウスのボタン") + "を押してください";
+  input.startCapture(dev, a, (res) => {
+    if (res.ok) bindsChanged(); else renderControls();
+    $("bind-msg").textContent = res.msg;
+    const again = document.querySelector('#pause-ctl button.bind[data-a="' + a + '"][data-d="' + dev + '"]');
+    if (again) again.focus();
+    input.consume();
+  });
+});
+$("bind-reset").addEventListener("click", () => {
+  input.setBinds(null); bindsChanged();
+  $("bind-msg").textContent = "ボタン・キー配置を初期設定に戻しました";
+});
+renderControls();
 canvas.addEventListener("click", () => { if (state === "playing" && !input.locked) input.lock(); });
 input.onLock = (locked) => { if (!locked && state === "playing" && input.device === "kb" && !G.loading) pause(); };
 input.onDevice = () => { HUD.refreshKeys(); HUD._lobby = null; lobbyHintT = 0; };
@@ -304,7 +331,7 @@ function frame(now) {
   requestAnimationFrame(frame);
   let dt = Math.min(0.05, (now - last) / 1000); last = now;
   input.poll();
-  if (state !== "playing") menuNav();
+  if (state !== "playing" && !input.capture) menuNav();
   else if (input.pressed.pause || input.pressed.menu) pause();
   $("lockhint").hidden = !(state === "playing" && input.device === "kb" && !input.locked && !G.loading);
   if (state === "playing" && G.level) {

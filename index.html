@@ -53,12 +53,15 @@
   <div id="pause" class="overlay" hidden>
     <div class="card wide menu">
       <h1>メニュー</h1>
-      <p class="mnote">ゲームは止まっています。<kbd>M</kbd> か <kbd>OPTIONS</kbd> でとじます。</p>
+      <p class="mnote">ゲームは止まっています。<kbd id="menu-key">M</kbd>（または Esc）か <kbd>OPTIONS</kbd> でとじます。</p>
       <p id="pause-stats" class="stats"></p>
       <button type="button" id="resume-btn" class="btn">つづける</button>
       <button type="button" id="to-lobby" class="btn ghost">ロビーにもどる</button>
-      <h2>操作方法</h2>
+      <h2>操作方法とボタン・キー配置</h2>
+      <p class="bnote">ボタン・キーの欄を押すと「入力待ち」になります。続けて使いたいボタン・キー（マウスのボタンも可）を押すと変わります。ほかの操作と同じものを選ぶと、2つを入れかえます。Esc か OPTIONS でやめられます。</p>
+      <p id="bind-msg" class="bmsg" aria-live="polite"></p>
       <div id="pause-ctl"></div>
+      <button type="button" id="bind-reset" class="btn ghost small">ボタン・キー配置を初期設定に戻す</button>
       <div class="tips">
         <p><b>磁力のきまり</b>：自分と<b>反対の極</b>のものは引き合い、<b>同じ極</b>のものは反発する。<span class="pn">赤＝N極</span>、<span class="ps">青＝S極</span>。</p>
         <p>自分より<b>小さいもの</b>（鉄くず・小さい敵）は引き寄せる。<b>大きいもの</b>（磁石ブロック・大きい敵）には自分が引っぱられる。</p>
